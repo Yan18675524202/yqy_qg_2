@@ -71,16 +71,17 @@
             registerRules: {
                 registerName: [
                     { required: true, message: '请输入姓名', trigger: 'blur' },
-                    { max: 10, message: 'Name cannot exceed 10 characters', trigger: 'blur' }
+                    { max: 10, message: '名字最多十位', trigger: 'blur' }
                 ],
                 registerPassword: [
                     { required: true, message: '请输入密码', trigger: 'blur' },
-                    { pattern: /^[a-zA-Z0-9]+$/, message: 'Password can only contain letters and numbers', trigger: 'blur' },
-                    { max: 10, message: 'Password cannot exceed 10 characters', trigger: 'blur' }
+                    { pattern: /^[a-zA-Z0-9]+$/, message: '密码只能是数字或英文字母', trigger: 'blur' },
+                    { max: 10, message: '密码最多十位', trigger: 'blur' }
                 ],
                 studentId: [
                     { required: true, message: '请输入学号', trigger: 'blur' },
-                    { len: 10, message: 'Student ID must be 10 characters', trigger: 'blur' }
+                    { len: 10, message: '学号必须是10位', trigger: 'blur' },
+                    { pattern: /^\d+$/, message: '学号只能是数字', trigger: 'blur' }
                 ],
                 grade: [
                     { required: true, message: '请选择年级', trigger: 'change' }
@@ -104,7 +105,7 @@
                     console.log(resp.data)
                     if (resp.data === "Error"){
                         this1.$message({
-                            message: '该学生已存在',
+                            message: '该学生已存在或输入格式错误',
                             type: 'error'
                         });
                     }else {

@@ -2,6 +2,7 @@ package com.yqy.Servlet.LoginAndRegister;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yqy.Service.Impl.PersonServiceImpl;
+import com.yqy.Utils.Regex;
 import com.yqy.pojo.Lesson;
 import com.yqy.pojo.yonghu.Student;
 import jakarta.servlet.ServletException;
@@ -21,15 +22,26 @@ public class RegisterServlet extends HttpServlet {
 
         Student student = JSONObject.parseObject(s, Student.class);
 
-        PersonServiceImpl personService = new PersonServiceImpl();
-        Student studentBtNumber = personService.getStudentBtNumber(student.getStudentNumber());
+        if (Regex.validateName(student.getUsername())&&
+            Regex.validatePassword(student.getPassword())&&
+            Regex.validateStudentID(student.getStudentNumber())){
 
-        if (studentBtNumber != null){
-            resp.getWriter().write("Error");
+            PersonServiceImpl personService = new PersonServiceImpl();
+            Student studentBtNumber = personService.getStudentBtNumber(student.getStudentNumber());
+
+            if (studentBtNumber != null){
+                resp.getWriter().write("Error");
+            }else {
+                int i = personService.addPerson(student);
+                resp.getWriter().write(String.valueOf(i));
+            }
+
+
         }else {
-            int i = personService.addPerson(student);
-            resp.getWriter().write(String.valueOf(i));
+            resp.getWriter().write("Error");
         }
+
+
 
 
 
