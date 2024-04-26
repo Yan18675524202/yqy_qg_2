@@ -1,0 +1,32 @@
+
+
+<mapper namespace ="com.yqy.Dao.DiscussDao">
+
+    <select   id="SelectByLessonId" parameterType="java.lang.Integer" resultType="com.yqy.pojo.Discussion">
+
+        SELECT * FROM discussion
+        where lessonId =#{lessonId};
+    </select>
+
+    <insert id ="insertDiscussion" parameterType="com.yqy.pojo.Discussion" resultType="java.lang.Integer">
+        INSERT INTO discussion
+        (id, lessonId,discussName ,information,time)
+        VALUES (null, #{lessonId},#{discussName},#{information}, #{time})
+
+    </insert>
+
+    <delete id="deleteDiscussionByName" parameterType="java.lang.String">
+        DELETE FROM discussion WHERE discussName = #{discussName}
+    </delete>
+
+
+    <update id="updateDiscussion" parameterType="com.yqy.pojo.Discussion" resultType="java.lang.Integer">
+        UPDATE discussion
+        SET information = #{information},discussName = #{discussName},
+        lessonId = #{lessonId}, time = #{time}
+        WHERE id = #{id}
+    </update>
+
+
+
+</mapper>

@@ -1,0 +1,122 @@
+
+
+<mapper namespace =  "com.yqy.Dao.LessonDao">
+
+
+    <delete id="deleteDiscussion" parameterType="java.lang.Integer">
+        DELETE FROM discussion WHERE id = #{id}
+    </delete>
+    <delete id="deleteLessonInformation" parameterType="java.lang.Integer">
+        DELETE FROM lessonInformation WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteQuestionById" parameterType="java.lang.Integer">
+        DELETE FROM Question WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteQuestionByChapterId" parameterType="java.lang.Integer">
+        DELETE FROM Question WHERE chapterId = #{chapterId}
+    </delete>
+    <delete id="deleteChapterById" parameterType="java.lang.Integer">
+        DELETE FROM chapter WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteLessonById" parameterType="java.lang.Integer">
+        DELETE FROM Lesson WHERE id = #{id}
+    </delete>
+    <select   id="SelectByTeacherName" parameterType="java.lang.String" resultType="com.yqy.pojo.Lesson">
+
+        SELECT * FROM lesson
+        where teacherName =#{teacherName};
+    </select>
+    <select   id="SelectLessonById" parameterType="java.lang.Integer" resultType="com.yqy.pojo.Lesson">
+
+        SELECT * FROM lesson
+        where id = #{id}
+    </select>
+
+
+    <select   id="SelectAllLesson"  resultType="com.yqy.pojo.Lesson">
+
+        SELECT * FROM lesson
+    </select>
+    <select  id="SelectInformationById" parameterType="java.lang.Integer" resultType="com.yqy.pojo.LessonInformation">
+        SELECT * FROM lessonInformation
+        where id = #{id}
+
+    </select>
+
+    <select  id="SelectQuestionById" parameterType="java.lang.Integer" resultType="com.yqy.pojo.Question">
+        SELECT * FROM Question
+        where id = #{id}
+
+    </select>
+    <select   id="SelectInformationByName" parameterType="java.lang.String" resultType="com.yqy.pojo.LessonInformation">
+        SELECT * FROM lessonInformation
+        where name = #{name};
+    </select>
+
+
+    <select   id="SelectByLessonId" parameterType="java.lang.Integer" resultType="com.yqy.pojo.Chapter">
+
+        SELECT * FROM chapter
+        where lessonId =#{lessonId};
+    </select>
+
+    <insert id ="insertLesson" parameterType="com.yqy.pojo.Lesson" resultType="java.lang.Integer">
+        INSERT INTO lesson
+        (id, name ,teacherName,informationId,registrationPopulation,currentEnrollment)
+        VALUES (null,#{name},#{teacherName},#{informationId},
+        #{registrationPopulation},#{currentEnrollment})
+
+    </insert>
+
+    <insert id ="insertChapter" parameterType="com.yqy.pojo.Chapter" resultType="java.lang.Integer">
+        INSERT INTO chapter
+        (id, lessonId ,name,information)
+        VALUES (null, #{lessonId},#{name},#{information})
+
+    </insert>
+
+    <insert id ="insertQuestion" parameterType="com.yqy.pojo.Question" resultType="java.lang.Integer">
+        INSERT INTO question
+        (id, chapterId ,name,information,questionType,rightAnswer,score,imagePath)
+        VALUES (null, #{chapterId},#{name},#{information},
+        #{questionType}, #{rightAnswer},#{score},#{imagePath})
+
+    </insert>
+
+
+    <insert id ="insertLessonInformation" parameterType="com.yqy.pojo.LessonInformation" resultType="java.lang.Integer">
+        INSERT INTO lessonInformation
+        (id, beginTime,endTime ,registrationPopulation,information,name)
+        VALUES (null, #{beginTime},#{endTime},#{registrationPopulation},#{information},#{name})
+
+    </insert>
+
+
+    <select   id="SelectByChapterId" parameterType="java.lang.Integer" resultType="com.yqy.pojo.Question">
+
+        SELECT * FROM Question
+        where chapterId =#{chapterId};
+    </select>
+
+    <update id="updateLesson" parameterType="com.yqy.pojo.Lesson" resultType="java.lang.Integer">
+        UPDATE lesson
+        SET name = #{name},teacherName = #{teacherName},
+        informationId = #{informationId},
+        registrationPopulation = #{registrationPopulation},
+        currentEnrollment = #{currentEnrollment}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateQuestion" parameterType="com.yqy.pojo.Question" resultType="java.lang.Integer">
+        UPDATE question
+        SET name = #{name},chapterId = #{chapterId},
+        information = #{information},name = #{name},
+        questionType = #{questionType},rightAnswer = #{rightAnswer},
+        score = #{score},imagePath = #{imagePath}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

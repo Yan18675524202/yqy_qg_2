@@ -1,0 +1,158 @@
+
+<mapper namespace =  "com.yqy.Dao.StudentDao">
+
+    <select   id="SelectAll"  resultType="com.yqy.pojo.yonghu.Student">
+        SELECT * FROM student
+    </select>
+
+    <select   id="SelectOneById" parameterType="java.lang.Integer" resultType="com.yqy.pojo.yonghu.Student">
+
+        SELECT * FROM student
+        where id =#{id};
+    </select>
+
+    <select   id="SelectOneByNameAndPassword" parameterType="com.yqy.pojo.yonghu.User" resultType="com.yqy.pojo.yonghu.Student">
+
+        SELECT * FROM student
+        where username = #{loginName}
+        and password = #{loginPassword}
+    </select>
+
+    <select   id="SelectOneByName" parameterType="java.lang.String" resultType="com.yqy.pojo.yonghu.Student">
+
+        SELECT * FROM student
+        where username = #{username}
+    </select>
+
+    <select   id="SelectMyLesson" parameterType="java.lang.String" resultType="com.yqy.pojo.yonghuStudy.RegisterStudent">
+
+        SELECT * FROM registerStudent
+        where studentName = #{studentName}
+    </select>
+
+
+    <insert id ="insertStudent" parameterType="com.yqy.pojo.yonghu.Student" resultType="java.lang.Integer">
+        INSERT INTO student
+        (id, username ,password,personInformation,studentNumber,grade)
+        VALUES (null, #{username},#{password},#{personInformation},
+        #{studentNumber},#{grade})
+
+    </insert>
+
+    <delete id="deleteStudentByName" parameterType="java.lang.String">
+        DELETE FROM student WHERE username = #{username}
+    </delete>
+
+    <delete id="deleteRegisterStudentById" parameterType="com.yqy.pojo.yonghuStudy.RegisterStudent">
+        DELETE FROM registerStudent WHERE id = #{id}
+    </delete>
+    <delete id="deleteCurrentChapterById" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentChapter">
+        DELETE FROM currentStudentChapter WHERE id = #{id}
+    </delete>
+    <delete id="deleteCurrentQuestionById" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion">
+        DELETE FROM currentStudentQuestion WHERE id = #{id}
+    </delete>
+
+
+    <update id="updateStudent" parameterType="com.yqy.pojo.yonghu.Student" resultType="java.lang.Integer">
+        UPDATE student
+        SET username = #{username},password = #{password},
+        personInformation = #{personInformation},
+        grade = #{grade},studentNumber = #{studentNumber}
+        WHERE id = #{id}
+    </update>
+
+    <insert id ="StudentRegisterLesson" parameterType="com.yqy.pojo.yonghuStudy.RegisterStudent" resultType="java.lang.Integer">
+        INSERT INTO registerStudent
+        (id, studentName ,lessonId,getScore)
+        VALUES (null, #{studentName},#{lessonId},#{getScore})
+    </insert>
+
+    <insert id ="RegisterLessonChapter" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentChapter" resultType="java.lang.Integer">
+        INSERT INTO CurrentStudentChapter
+        (id ,studentName,chapterId,
+        chapterFinish,information,lessonId,getScore)
+        VALUES (null,#{studentName}, #{chapterId},
+        #{chapterFinish},#{information},#{lessonId},#{getScore})
+    </insert>
+
+    <insert id ="RegisterChapterQuestion" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion" resultType="java.lang.Integer">
+        INSERT INTO CurrentStudentQuestion
+        (id ,studentName,information,
+        answer,questionFinish,questionId,chapterId,getScore,imagePath)
+        VALUES (null,#{studentName} ,
+        #{information}, #{answer},#{questionFinish}
+        ,#{questionId},#{chapterId},#{getScore},#{imagePath})
+    </insert>
+
+    <select   id="SelectRegisterStudent" parameterType="com.yqy.pojo.yonghuStudy.RegisterStudent" resultType="com.yqy.pojo.yonghuStudy.RegisterStudent">
+
+        SELECT * FROM registerStudent
+        where studentName = #{studentName} and lessonId = #{lessonId}
+    </select>
+
+    <select   id="SelectRegisterStudentByName" parameterType="java.lang.String" resultType="com.yqy.pojo.yonghuStudy.RegisterStudent">
+
+        SELECT * FROM registerStudent
+        where studentName = #{studentName}
+    </select>
+
+    <select   id="SelectRegisterStudentByLessonId" parameterType="java.lang.Integer" resultType="com.yqy.pojo.yonghuStudy.RegisterStudent">
+
+        SELECT * FROM registerStudent
+        where  lessonId = #{lessonId}
+    </select>
+
+    <select   id="SelectMyChapter" parameterType="com.yqy.pojo.yonghuStudy.RegisterStudent" resultType="com.yqy.pojo.yonghuStudy.CurrentStudentChapter">
+
+        SELECT * FROM currentStudentChapter
+        where studentName = #{studentName} and lessonId = #{lessonId}
+    </select>
+
+    <select   id="SelectMyChapterByNameAndId" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion" resultType="com.yqy.pojo.yonghuStudy.CurrentStudentChapter">
+
+        SELECT * FROM currentStudentChapter
+        where studentName = #{studentName} and chapterId = #{chapterId}
+    </select>
+
+    <select   id="SelectMyQuestion" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentChapter" resultType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion">
+
+        SELECT * FROM currentStudentQuestion
+        where studentName = #{studentName} and chapterId = #{chapterId}
+    </select>
+
+    <select   id="SelectMyQuestionById" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion" resultType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion">
+
+        SELECT * FROM currentStudentQuestion
+        where id = #{id}
+    </select>
+
+    <update id="UpdateRegisterStudent" parameterType="com.yqy.pojo.yonghuStudy.RegisterStudent" resultType="java.lang.Integer">
+        UPDATE registerStudent
+        SET studentName = #{studentName},lessonId = #{lessonId},getScore = #{getScore}
+        WHERE id = #{id}
+    </update>
+    <update id="UpdateCurrentChapter" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentChapter" resultType="java.lang.Integer">
+        UPDATE currentStudentChapter
+        SET studentName = #{studentName},chapterId = #{chapterId},
+        chapterFinish = #{chapterFinish},information = #{information},
+        lessonId = #{lessonId},getScore = #{getScore}
+        WHERE id = #{id}
+    </update>
+    <update id="UpdateCurrentQuestion" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion" resultType="java.lang.Integer">
+        UPDATE currentStudentQuestion
+        SET studentName = #{studentName},information = #{information},
+        answer = #{answer},getScore = #{getScore},
+        questionFinish = #{questionFinish},imagePath = #{imagePath},
+        questionId = #{questionId},  chapterId = #{chapterId}
+        WHERE id = #{id}
+    </update>
+
+    <select   id="SelectStudentByNumber" parameterType="java.lang.String" resultType="com.yqy.pojo.yonghu.Student">
+
+        SELECT * FROM student
+        where studentNumber = #{studentNumber}
+    </select>
+
+
+</mapper>

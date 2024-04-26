@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>选择头像</title>
+    <link href="css/register.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .form-div {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-div img {
+            display: block;
+            margin: 0 auto 20px; /* 居中并留出底部间距 */
+            max-width: 100%;
+            height: auto;
+            border-radius: 50%; /* 圆形头像 */
+            border: 2px solid #007bff; /* 蓝色边框 */
+        }
+        .form-div input[type="file"] {
+            display: none;
+        }
+        .form-div .add {
+            font-size: 36px; /* 放大一点 */
+            color: #007bff;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto 20px; /* 居中并留出底部间距 */
+            width: 50px;
+            height: 50px;
+            line-height: 50px; /* 垂直居中 */
+            text-align: center; /* 文字水平居中 */
+            border: 2px dashed #007bff; /* 蓝色虚线边框 */
+            border-radius: 50%; /* 圆形边框 */
+            transition: all 0.3s ease; /* 添加过渡效果 */
+        }
+        .form-div .add:hover {
+            background-color: #007bff; /* 背景色变为蓝色 */
+            color: #fff; /* 文字变为白色 */
+            border-color: #fff; /* 边框变为白色 */
+        }
+        .form-div input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-div input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script>
+        // 解析URL查询参数
+        function getQueryParam(name) {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            return urlParams.get(name);
+        }
+
+        // 设置用户名到隐藏字段中
+        $(document).ready(function() {
+            $("#userName").val(getQueryParam("userName"));
+        });
+
+        function preview(obj) {
+            var img = document.getElementById("previewimg");
+            img.src = window.URL.createObjectURL(obj.files[0]);
+        }
+
+        $(document).ready(function() {
+            $("form").submit(function(event) {
+                // 获取用户名
+                var userName = getQueryParam("userName");
+                // 如果用户名存在，则添加到表单数据中
+                if (userName) {
+                    $("<input>").attr({
+                        type: "hidden",
+                        name: "userName",
+                        value: userName
+                    }).appendTo($(this));
+                }
+                return true; // 继续表单提交
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div class="form-div">
+    <form action="addImgServlet" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        <input type="hidden" id="userName" name="userName" value="">
+        <div>
+            <img src="" id="previewimg" alt="Preview Image">
+        </div>
+        <div>
+            <label for="img" class="add">+</label>
+            <input type="file" id="img" name="img" onchange="preview(this)">
+        </div>
+        <input type="submit" id="submit_content" value="上传">
+    </form>
+</div>
+</body>
+</html>

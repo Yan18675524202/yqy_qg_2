@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <template>
+
+        <el-container>
+            <el-main>
+                <!-- 注册表单 -->
+                <el-card class="register-card">
+                    <h2>Register</h2>
+                    <el-form :model="registerForm" label-width="80px" ref="registerForm" :rules="registerRules">
+                        <el-form-item label="Name" prop="registerName">
+                            <el-input v-model="registerForm.username" placeholder="Enter your name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Password" prop="registerPassword">
+                            <el-input type="password" v-model="registerForm.Password" placeholder="Enter your password"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Student ID" prop="studentId">
+                            <el-input v-model="registerForm.studentNumber" placeholder="Enter your student ID"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Grade" prop="grade">
+                            <el-select v-model="registerForm.grade" placeholder="Select grade">
+                                <el-option label="大一" value="大一"></el-option>
+                                <el-option label="大二" value="大二"></el-option>
+                                <el-option label="大三" value="大三"></el-option>
+                                <el-option label="大四" value="大四"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="register">Register</el-button>
+                        </el-form-item>
+                    </el-form>
+                    <el-link href="http://localhost:8080/yqy_qg_2_war/login.html" type="primary">点击登录</el-link>
+                </el-card>
+            </el-main>
+        </el-container>
+
+    </template>
+
+
+</div>
+
+
+
+
+
+</body>
+<script src="js/vue.js"></script><script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+
+
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+
+            registerForm: {
+                username: '',
+                Password: '',
+                studentNumber: '',
+                grade: ''
+            },
+
+            registerRules: {
+                registerName: [
+                    { required: true, message: '请输入姓名', trigger: 'blur' },
+                    { max: 10, message: 'Name cannot exceed 10 characters', trigger: 'blur' }
+                ],
+                registerPassword: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { pattern: /^[a-zA-Z0-9]+$/, message: 'Password can only contain letters and numbers', trigger: 'blur' },
+                    { max: 10, message: 'Password cannot exceed 10 characters', trigger: 'blur' }
+                ],
+                studentId: [
+                    { required: true, message: '请输入学号', trigger: 'blur' },
+                    { len: 10, message: 'Student ID must be 10 characters', trigger: 'blur' }
+                ],
+                grade: [
+                    { required: true, message: '请选择年级', trigger: 'change' }
+                ]
+            }
+
+        },
+        methods: {
+
+            register() {
+                var this1 = this
+                // 处理注册逻辑
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/Register",
+                    data: this1.registerForm
+                }).then(function (resp) {
+
+
+                    // 注册成功跳转到对应页面
+                    console.log(resp.data)
+                    if (resp.data === "Error"){
+                        this1.$message({
+                            message: '该学生已存在',
+                            type: 'error'
+                        });
+                    }else {
+                        this1.$message({
+                            message: '注册成功！，2秒后跳转到登录界面',
+                            type: 'success'
+                        });
+                        setTimeout(function () {
+                            window.location.href = '/yqy_qg_2_war/login.html';
+                        }, 2000); // 延迟2秒跳转
+                    }
+
+
+
+
+
+
+                })
+            }
+        }
+    })
+</script>
+
+
+
+
+
+<style scoped>
+    .register-card {
+        width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Register</title>
+  <!-- 引入 Element UI 的样式文件 -->
+  <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+  <template>
+      <el-container>
+        <el-main>
+          <!-- 登录表单 -->
+          <el-card class="login-card">
+            <h2>Login</h2>
+            <el-form :model="loginForm" label-width="80px" ref="loginForm" :rules="loginRules">
+              <el-form-item label="Name" prop="loginName">
+                <el-input v-model="loginForm.loginName" placeholder="Enter your name"></el-input>
+              </el-form-item>
+              <el-form-item label="Password" prop="loginPassword">
+                <el-input type="password" v-model="loginForm.loginPassword" placeholder="Enter your password"></el-input>
+              </el-form-item>
+              <el-radio-group  v-model="loginForm.radioValue">
+                <!-- 单选框项 -->
+                <el-radio label="1">学生</el-radio>
+                <el-radio label="2">教师</el-radio>
+              </el-radio-group>
+              <el-form-item>
+                <el-button  type="primary" @click="login()">Login</el-button>
+              </el-form-item>
+              <el-link href="http://localhost:8080/yqy_qg_2_war/register.html" type="primary">点击注册</el-link>
+            </el-form>
+          </el-card>
+        </el-main>
+      </el-container>
+
+  </template>
+
+
+</div>
+
+
+
+</body>
+
+
+<script src="js/vue.js"></script><script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+
+<script>
+
+  new Vue({
+    el:"#app",
+    data:{
+
+        path: "",
+
+        loginForm: {},
+
+        loginRules: {
+          loginName: [
+            {required: true, message: '请输入姓名', trigger: 'blur'},
+            {max: 10, message: 'Name cannot exceed 10 characters', trigger: 'blur'}
+          ],
+          loginPassword: [
+            {required: true, message: '请输入密码', trigger: 'blur'},
+            {pattern: /^[a-zA-Z0-9]+$/, message: 'Password can only contain letters and numbers', trigger: 'blur'},
+            {max: 10, message: 'Password cannot exceed 10 characters', trigger: 'blur'}
+          ],
+
+        },
+
+
+    },
+    mounted() {
+    },
+    methods: {
+
+      login() {
+        var  this1 = this
+        // 处理登录逻辑
+        axios({
+          method:"post",
+          url:"http://localhost:8080/yqy_qg_2_war/Login",
+          data :this1.loginForm,
+
+        }).then(function (resp) {
+
+          var receiveData = resp.data;
+          // 登录成功跳转到对应页面
+          console.log(receiveData)
+          if (receiveData.user.radioValue === '1') {
+            console.log(localStorage.getItem("token"))
+            this1.$message({
+              message: '登录成功！，2秒后跳转到学生界面',
+              type: 'success'
+            });
+            localStorage.setItem('token', receiveData.jwtToken);
+            setTimeout(function() {
+              window.location.href= "studentHome.html?Authorization="+localStorage.getItem("token")
+            }, 2000); // 延迟2秒跳转
+
+          }else if (receiveData.user.radioValue === '2') {
+            this1.$message({
+              message: '登录成功！，2秒后跳转到教师界面',
+              type: 'success'
+            });
+            localStorage.setItem('token', receiveData.jwtToken);
+            setTimeout(function() {
+              window.location.href= "teacherHome.html?Authorization="+localStorage.getItem("token")
+            }, 2000); // 延迟2秒跳
+          } else {
+            // 处理其他角色
+            this.$message.error({
+              message: '身份不存在'
+            });
+          }
+
+
+
+        })
+
+
+
+
+
+
+
+      },
+
+    }
+  })
+
+</script>
+
+<style scoped>
+  .login-card {
+    width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .captcha-image {
+    cursor: pointer;
+    margin-left: 10px;
+    vertical-align: middle;
+    width: 120px;
+    height: 40px;
+    border-radius: 4px;
+  }
+</style>
+</html>

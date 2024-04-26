@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+
+    <style scoped>
+        .admin-dashboard {
+            display: flex;
+        }
+        .el-menu-vertical-demo {
+            height: 100%;
+        }
+        .main-content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="a">
+    <template>
+        <div class="admin-dashboard">
+            <el-menu
+                    default-active="studentManagement"
+                    class="el-menu-vertical-demo"
+                    @select="handleMenuSelect"
+                    style="width: 200px;"
+            >
+                <el-menu-item index="roomChoice">全部课程</el-menu-item>
+                <el-menu-item index="appliyRoom">个人课程</el-menu-item>
+                <el-menu-item index="myInformation">个人信息</el-menu-item>
+            </el-menu>
+
+            <!-- 主要内容区域 -->
+            <div class="main-content">
+                <div v-if="currentMenu === 'roomChoice'">
+
+                    <!-- 全部课程 -->
+                    <h2>全部课程</h2>
+                    <el-row>
+                        <el-button type="primary" @click="showGoodLesson()">热门课程</el-button>
+                        <el-button type="primary" @click="showGoodStudent()">卷王排行</el-button>
+                    </el-row>
+                    <!-- 热门课程 -->
+                    <el-dialog title="热门课程" :visible.sync="GoodLessonsDialogVisible">
+                        <el-table :data="goodLesson" style="width: 100%" >
+                            <el-table-column align="center" prop="name" label="课程"></el-table-column>
+                            <el-table-column align="center" prop="teacherName" label="科任老师 "></el-table-column>
+                            <el-table-column align="center" prop="currentEnrollment" label="当前人数"></el-table-column>
+                        </el-table>
+                        <span slot="footer" class="dialog-footer">
+              <el-button @click="GoodLessonsDialogVisible = false">关闭</el-button>
+            </span>
+                    </el-dialog>
+                    <!-- 卷王排行 -->
+                    <el-dialog title="众卷王" :visible.sync="GoodStudentDialogVisible">
+                        <el-table :data="goodStudent"style="width: 100%" >
+                            <el-table-column align="center" prop="studentName" label="卷王"></el-table-column>
+                            <el-table-column align="center" prop="getScore" label="得分"></el-table-column>
+                        </el-table>
+                        <span slot="footer" class="dialog-footer">
+              <el-button @click="GoodStudentDialogVisible = false">关闭</el-button>
+            </span>
+
+                    </el-dialog>
+
+                    <el-table :data="AllLessonData" style="width: 100%">
+
+                        <el-table-column align="center" prop="name" label="课程"></el-table-column>
+                        <el-table-column align="center" prop="teacherName" label="科任老师 "></el-table-column>
+                        <el-table-column align="center" prop="registrationPopulation" label="总人数"></el-table-column>
+                        <el-table-column align="center" prop="currentEnrollment" label="当前人数"></el-table-column>
+                        <el-table-column label="">
+                            <template slot-scope="scope">
+                                <el-button type="text" @click="showCourseInfo(scope.row)">课程信息</el-button>
+                                <el-button type="text" @click="showDiscussion(scope.row)">讨论区</el-button>
+                                <el-button type="text" @click="showRegister(scope.row)">报名</el-button>
+                            </template>
+                        </el-table-column>
+
+                    </el-table>
+
+                    <el-dialog title="报名" :visible.sync="RegisterDialogVisible">
+
+                          <span slot="footer" class="dialog-footer">
+                                <el-button @click="RegisterDialogVisible = false">取消</el-button>
+                                <el-button @click="sendRegister()">报名</el-button>
+                         </span>
+                    </el-dialog>
+
+                    <!--评论区-->
+                    <el-dialog title="讨论区" :visible.sync="DiscussionsDialogVisible">
+                        <el-table :data="AllDiscussions"style="width: 100%" >
+                            <el-table-column align="center" prop="time" label="评论时间"></el-table-column>
+                            <el-table-column align="center" prop="discussName" label="评论人 "></el-table-column>
+                            <el-table-column align="center" prop="information" label="内容"></el-table-column>
+                        </el-table>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button type="primary" @click="DiscussionsDialogVisible = false">关闭</el-button>
+                            <el-button  type="primary" @click="addDiscussDialogVisible = true">发表评论</el-button>
+                        </span>
+
+                    </el-dialog>
+
+
+                    <el-dialog title="评论" :visible.sync="addDiscussDialogVisible">
+                        <el-form :model="discussInfo">
+                            <el-form-item label="" :label-width="formLabelWidth">
+                                <el-input v-model="discussInfo.information"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <el-button type="primary" @click="addDiscussDialogVisible = false">关闭</el-button>
+                        <el-button type="primary" @click="addDiscuss()">发送</el-button>
+                    </el-dialog>
+
+                    <el-dialog title="课程信息" :visible.sync="courseInfoDialogVisible">
+                        <el-form :model="lessonInformation">
+                            <el-form-item label="开课时间" :label-width="formLabelWidth">
+                                <el-input v-model="lessonInformation.beginTime"></el-input>
+                            </el-form-item>
+                            <el-form-item label="结课时间" :label-width="formLabelWidth">
+                                <el-input v-model="lessonInformation.endTime" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="总人数" :label-width="formLabelWidth">
+                                <el-input  v-model="lessonInformation.registrationPopulation"></el-input>
+                            </el-form-item>
+                            <el-form-item label="介绍" :label-width="formLabelWidth">
+                                <el-input v-model="lessonInformation.information"></el-input>
+                            </el-form-item>
+
+                        </el-form>
+                    </el-dialog>
+
+                </div>
+
+
+                <div v-else-if="currentMenu === 'appliyRoom'">
+                    <div v-if="currentMyLessonMenu === 'MyLesson'">
+                    <!-- 个人课程-->
+                    <h2>个人课程</h2>
+                    <h2></h2>
+                    <el-table :data="myLesson" style="width: 100%">
+                        <el-table-column align="center" prop="name"  label="课程"></el-table-column>
+                        <el-table-column align="center" prop="teacherName" label="科任老师"></el-table-column>
+                        <el-table-column align="center" prop="registrationPopulation" label="总人数"></el-table-column>
+                        <el-table-column align="center" prop="currentEnrollment" label="当前人数"></el-table-column>
+                        <el-table-column label="">
+                            <template slot-scope="scope">
+                                <el-button type="text" @click="showCourseInfo(scope.row)">课程信息</el-button>
+                                <el-button type="text" @click="showDiscussion(scope.row)">讨论区</el-button>
+                                <el-button type="text" @click="showStudy(scope.row)">学习</el-button>
+                            </template>
+                        </el-table-column>
+
+                    </el-table>
+                        <!--评论区-->
+                        <el-dialog title="讨论区" :visible.sync="DiscussionsDialogVisible">
+                            <el-table :data="AllDiscussions"style="width: 100%" >
+                                <el-table-column align="center" prop="time" label="评论时间"></el-table-column>
+                                <el-table-column align="center" prop="discussName" label="评论人 "></el-table-column>
+                                <el-table-column align="center" prop="information" label="内容"></el-table-column>
+                            </el-table>
+                            <span slot="footer" class="dialog-footer">
+                                <el-button @click="DiscussionsDialogVisible = false">关闭</el-button>
+                                 <el-button @click="addDiscussDialogVisible = true">发表评论</el-button>
+                             </span>
+
+                        </el-dialog>
+
+                        <el-dialog title="评论" :visible.sync="addDiscussDialogVisible">
+                            <el-form :model="discussInfo">
+                                <el-form-item label="" :label-width="formLabelWidth">
+                                    <el-input v-model="discussInfo.information"></el-input>
+                                </el-form-item>
+                            </el-form>
+                            <el-button @click="addDiscussDialogVisible = false">关闭</el-button>
+                            <el-button @click="addDiscuss()">发送</el-button>
+                        </el-dialog>
+
+                        <el-dialog title="课程信息" :visible.sync="courseInfoDialogVisible">
+                            <el-form :model="lessonInformation">
+                                <el-form-item label="开课时间" :label-width="formLabelWidth">
+                                    <el-input v-model="lessonInformation.beginTime"></el-input>
+                                </el-form-item>
+                                <el-form-item label="结课时间" :label-width="formLabelWidth">
+                                    <el-input v-model="lessonInformation.endTime" autocomplete="off"></el-input>
+                                </el-form-item>
+                                <el-form-item label="总人数" :label-width="formLabelWidth">
+                                    <el-input  v-model="lessonInformation.registrationPopulation"></el-input>
+                                </el-form-item>
+                                <el-form-item label="介绍" :label-width="formLabelWidth">
+                                    <el-input v-model="lessonInformation.information"></el-input>
+                                </el-form-item>
+
+                            </el-form>
+                        </el-dialog>
+
+                    </div>
+                    <div v-else-if="currentMyLessonMenu === 'PersonStudy'">
+                        <el-button type="primary" @click="currentMyLessonMenu = 'MyLesson'" >返回</el-button>
+                        <el-table :data="chapters" style="width: 100%">
+                            <el-table-column align="center" prop="chapterFinish" label="完成情况"></el-table-column>
+                            <el-table-column align="center" prop="getScore" label="得分"></el-table-column>
+                            <el-table-column label="学习">
+                                <template slot-scope="scope">
+                                    <el-button type="primary" @click="showChapterInfoAndImage(scope.row)">学习章节</el-button>
+                                    <el-button type="primary" @click="showQuestion(scope.row)">答题</el-button>
+                                </template>
+                            </el-table-column>
+
+                        </el-table>
+
+                        <el-dialog title="章节" :visible.sync="ChapterInfoAndImageDialogVisible">
+                            <div class="block"  :key="fit">
+                            <el-image
+                                    style="width: 300px; height: 100px"
+                                    :src="currentChapter.imagePath"
+                                    :fit="fit"></el-image>
+                              </div>>
+                            {{currentChapter.information}}
+
+                                <el-button type="text" @click="ChapterInfoAndImageDialogVisible = false">退出</el-button>
+                        </el-dialog>
+
+                        <el-dialog title="问题" :visible.sync="QuestionInfoDialogVisible">
+
+                            <el-table :data="Questions" style="width: 100%">
+                                <el-table-column align="center" prop="information" label="问题"></el-table-column>
+                                <el-table-column align="center" prop="questionFinish"  label="完成情况"></el-table-column>
+                                <el-table-column align="center" prop="getScore" label="得分"></el-table-column>
+                                <el-table-column label="">
+                                    <template slot-scope="scope">
+                                        <el-button type="text" @click="submit(scope.row)">答题</el-button>
+                                    </template>
+                                </el-table-column>
+                                <el-button type="text" @click="QuestionInfoDialogVisible = false">退出</el-button>
+                            </el-table>
+
+                        </el-dialog>
+
+                        <el-dialog title="答案" :visible.sync="AnswerInfoDialogVisible">
+                            <div class="block"  :key="fit">
+                            <el-image
+                                    style="width: 300px; height: 100px"
+                                    :src="imagePath"
+                                    :fit="fit"></el-image>
+                            </div>
+                            <el-form>
+                                <el-form-item >
+                                    <el-input v-model="answer"></el-input>
+                                </el-form-item>
+                            </el-form>
+                            <el-button type="text" @click="submitInfo()">提交</el-button>
+                            <el-button type="text" @click="AnswerInfoDialogVisible = false">取消</el-button>
+
+                        </el-dialog>
+
+
+
+
+                    </div>
+
+
+                 </div>
+
+                <div v-else-if="currentMenu === 'myInformation'">
+                    <!-- 个人信息 -->
+                    <h2>个人信息</h2>
+                    <h3>姓名:{{personInfo.username}}</h3>
+                    <h3>简介:{{personInfo.personInformation}}</h3>
+                    <h3>学号:{{personInfo.studentNumber}}</h3>
+                    <h3>年级:{{personInfo.grade}}</h3>
+                    <el-row>
+                        <el-button type="primary" icon="el-icon-edit" circle @click="updatemyInformation()"></el-button>
+                        <el-button type="primary" @click="updateMyPasswordDialogVisible = true">修改密码</el-button>
+                    </el-row>
+                    <el-dialog
+                            title="修改个人信息"
+                            :visible.sync="updateMyPasswordDialogVisible"
+                            width="30%"
+                            center
+                    >
+                        <el-form :model="MyPasswordInfo" label-width="100px">
+                            <el-form-item label="新密码">
+                                <el-input v-model="MyPasswordInfo.password"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="updateMyPasswordDialogVisible = false">取消</el-button>
+                            <el-button type="primary" @click="updatemyPassword()">保存</el-button>
+                        </div>
+                    </el-dialog>
+                    <el-dialog
+                            title="修改个人信息"
+                            :visible.sync="myInformationDialogVisible"
+                            width="30%"
+                            center
+                    >
+                        <el-form :model="personInfo" label-width="100px">
+                            <el-form-item label="姓名">
+                                <el-input v-model="personInfo.username"></el-input>
+                            </el-form-item>
+                            <el-form-item label="简介">
+                                <el-input v-model="personInfo.personInformation"></el-input>
+                            </el-form-item>
+                            <el-form-item label="学号">
+                                <el-input v-model="personInfo.studentNumber"></el-input>
+                            </el-form-item>
+                            <el-form-item label="年级">
+                                <el-select v-model="personInfo.grade" placeholder="请选择" >
+                                    <el-option label="大一" value="大一" ></el-option>
+                                    <el-option label="大二" value="大二" ></el-option>
+                                    <el-option label="大三" value="大三" ></el-option>
+                                    <el-option label="大四" value="大四" ></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="myInformationDialogVisible = false">取消</el-button>
+                            <el-button type="primary" @click="savemyInformation">保存</el-button>
+                        </div>
+                    </el-dialog>
+                </div>
+
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </template>
+
+
+
+</div>
+
+
+
+
+<script src="js/axios-0.18.0.js"></script>
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script>
+
+    new Vue({
+        el:"#a",
+        data: {
+            currentMenu: "roomChoice", // 当前选中的菜单
+            currentMyLessonMenu:"MyLesson",
+            currentPage: 1,
+            pageSize: 6,
+
+            myInformationDialogVisible:false,
+            courseInfoDialogVisible: false,
+            DiscussionsDialogVisible: false,
+            RegisterDialogVisible : false,
+            QuestionInfoDialogVisible :false,
+            AnswerInfoDialogVisible:false,
+            addDiscussDialogVisible:false,
+            updateMyPasswordDialogVisible:false,
+            createReplyDialogVisible:false,
+            GoodLessonsDialogVisible:false,
+            GoodStudentDialogVisible:false,
+            ChapterInfoAndImageDialogVisible:false,
+            goodStudent:[],
+            goodLesson:[],
+            //表单尺寸
+            formLabelWidth: '120px',
+
+            AllLessonData: [],
+            myLesson:[],
+            //评论区
+            AllDiscussions:[],
+            //课程详细信息
+            lessonInformation: {},
+            registerInformation:{},
+
+            showStudyInformation:{},
+            showQuestionInformation:{},
+            MyAnswer:{},
+            personInfo:{},
+            discussInfo:{},
+            chapters:[],
+            Questions:[],
+            MyPasswordInfo:{},
+            ChapterInfo:"",
+            answer:"",
+            imagePath:"",
+            fit:'contain',
+            currentChapter:{},
+        },
+        methods:{
+            showChapterInfoAndImage(Chapter){
+                this.currentChapter.imagePath = Chapter.imagePath
+                this.currentChapter.information = Chapter.information
+
+                this.ChapterInfoAndImageDialogVisible = true
+            },
+            showGoodLesson(){
+                axios({
+                    method: "get",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetLesson?sign=2",
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    this.goodLesson = resp.data
+
+
+                })
+                this.GoodLessonsDialogVisible = true
+            },
+            showGoodStudent(){
+                axios({
+                    method: "get",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetGoodStudent",
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    this.goodStudent = resp.data
+
+
+                })
+                this.GoodStudentDialogVisible = true
+
+
+            },
+            showReply(discussion){
+
+            },
+            createReply(discussion){
+                createReplyDialogVisible = true
+
+            },
+            handleSizeChange(val) {
+                this.pageSize = val;
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+            },
+            //修改密码
+            updatemyPassword(){
+                this.MyPasswordInfo.username = this.personInfo.username
+
+                let this1 = this
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/UpdatePassword?sign=2",
+                    data: this1.MyPasswordInfo,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    if (resp.data === "Success") {
+                        this1.$message({
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                    } else {
+                        this1.$message({
+                            message: '修改失败',
+                            type: 'error'
+                        });
+                    }
+
+
+                    this.updateMyPasswordDialogVisible = false;
+                })
+            },
+            //添加评论
+            addDiscuss() {
+                this.discussInfo.discussname = this.personInfo.username
+                this.discussInfo.lessonId = this.currentLesson.id;
+                let this1 = this
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/CreateDiscussion",
+                    data: this1.discussInfo,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    if (resp.data === "Success") {
+                        this1.$message({
+                            message: '评论成功',
+                            type: 'success'
+                        });
+                    } else {
+                        this1.$message({
+                            message: '评论失败',
+                            type: 'error'
+                        });
+                    }
+
+
+                    this.addDiscussDialogVisible = false;
+                })
+            },
+            //提交答案
+            submitInfo(){
+
+                this.MyAnswer.answer = this.answer;
+                this.MyAnswer.studentName = this.personInfo.username
+
+                var this1 =this
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/Submit",
+                    data: this1.MyAnswer,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                  if (resp.data === "Success"){
+                      this1.$message({
+                          message: '回答正确',
+                          type: 'success'
+                      });
+                  }else {
+                      this1.$message({
+                          message: '回答错误',
+                          type: 'success'
+                      });
+                  }
+
+
+                })
+                this.AnswerInfoDialogVisible = false
+
+
+            },
+            submit(Question){
+                this.imagePath = Question.imagePath
+                this.MyAnswer.chapterId = Question.chapterId
+                this.MyAnswer.id = Question.id
+                this.AnswerInfoDialogVisible = true
+            },
+
+
+            showQuestion(Chapter){
+                var this1 =this
+
+
+                this.showQuestionInformation.studentName = this.personInfo.username
+                this.showQuestionInformation.chapterId = Chapter.chapterId
+
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetQuestion",
+                    data:this1.showQuestionInformation,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    console.log(resp.data)
+                    this1.Questions = resp.data
+
+                })
+                this.QuestionInfoDialogVisible = true
+
+            },
+            //开始课程学习
+            showStudy(lesson){
+                var this1 =this
+
+                this.showStudyInformation.studentName = this.personInfo.username
+                this.showStudyInformation.lessonId = lesson.id
+
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetChapter",
+                    data:this1.showStudyInformation,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    if (resp.data === "Time"){
+                        this1.$message({
+                            message: '现在不属于学习时间',
+                            type: 'success'
+                        });
+                    }else {
+                        this1.chapters = resp.data
+                    }
+
+
+
+                })
+                this.currentMyLessonMenu = 'PersonStudy'
+
+
+            },
+            //加载个人课程
+            showMyLesson(){
+                let item = localStorage.getItem('token');
+
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetMyLesson",
+                    data:item,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                   this.myLesson = resp.data
+
+                })
+
+
+            },
+            //发送注册课程请求
+            sendRegister(){
+                var this1 = this
+                this.RegisterDialogVisible = false,
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/RegisterLesson",
+                    data:this1.registerInformation,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+
+                   if (resp.data === "Success"){
+                       this1.$message({
+                           message: '注册成功',
+                           type: 'success'
+                       });
+                   }else {
+                       this1.$message({
+                           message: '用户已注册该课程',
+                           type: 'success'
+                       });
+                   }
+
+
+
+                })
+
+
+            },
+
+            showRegister(lesson){
+                this.registerInformation.lessonId = lesson.id
+                this.registerInformation.studentName = this.personInfo.username
+                this.RegisterDialogVisible  = true
+
+
+            },
+            //保存修改后的个人信息
+            savemyInformation(){
+                this.myInformationDialogVisible = false
+                var this1 = this
+
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/UpdatePerson?sign=2",
+                    data:this1.personInfo,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    console.log(resp.data)
+                    if (resp.data === "1") {
+                        this.getPersonInfo();
+                    }
+
+
+
+                })
+
+
+            },
+            //修改个人信息
+            updatemyInformation(){
+
+                this.myInformationDialogVisible = true
+
+            },
+            //展示课程详细信息
+            showCourseInfo(course) {
+
+
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetInformation",
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    },
+                    data:course
+                }).then(resp => {
+
+
+                    this.lessonInformation = resp.data
+                    console.log(this.lessonInformation )
+                })
+
+
+                this.courseInfoDialogVisible = true;
+            },
+            //展示讨论区
+            showDiscussion(course) {
+               this.currentLesson = course
+
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetDiscussion",
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+                            "Authorization":localStorage.getItem("token")
+                    },
+                    data:course
+                }).then(resp => {
+
+
+                    this.AllDiscussions = resp.data
+                    console.log(this.AllDiscussions)
+                })
+
+               this.DiscussionsDialogVisible =  true
+
+            },
+            //侧边栏选择
+            handleMenuSelect(menuIndex) {
+                this.currentMenu = menuIndex;
+            },
+            //得到个人信息
+            getPersonInfo(){
+                let item = localStorage.getItem('token');
+
+
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/yqy_qg_2_war/GetPerson",
+                    data:item,
+                    headers:{
+                        "Authorization":localStorage.getItem("token")
+                    }
+                }).then(resp => {
+                    console.log(resp.data)
+                    this.personInfo=resp.data;
+
+                })
+            },
+
+
+        },
+        //初始化
+        mounted(){
+            var this1 = this
+            axios({
+                method: "get",
+                url: "http://localhost:8080/yqy_qg_2_war/GetLesson?sign=1",
+                headers:{
+                    "Authorization":localStorage.getItem("token")
+                }
+            }).then(resp => {
+                this.AllLessonData = resp.data;
+
+            })
+            this.getPersonInfo();
+
+
+            this.showMyLesson();
+
+
+
+
+
+
+        }
+
+    })
+</script>
+
+</body>
+</html>

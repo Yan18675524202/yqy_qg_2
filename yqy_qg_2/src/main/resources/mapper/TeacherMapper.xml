@@ -1,0 +1,68 @@
+
+<mapper namespace =  "com.yqy.Dao.TeacherDao">
+
+    <select   id="SelectOneById" parameterType="java.lang.Integer" resultType="com.yqy.pojo.yonghu.Teacher">
+
+        SELECT * FROM teacher
+        where id =#{id};
+    </select>
+
+
+    <select   id="SelectOneByNameAndPassword" parameterType="com.yqy.pojo.yonghu.User" resultType="com.yqy.pojo.yonghu.Teacher">
+
+        SELECT * FROM teacher
+        where username = #{loginName}
+        and password = #{loginPassword}
+    </select>
+
+    <select   id="SelectOneByName" parameterType="java.lang.String" resultType="com.yqy.pojo.yonghu.Teacher">
+
+        SELECT * FROM teacher
+        where username = #{username}
+    </select>
+
+    <insert id ="insertTeacher" parameterType="com.yqy.pojo.yonghu.Teacher" resultType="java.lang.Integer">
+        INSERT INTO teacher
+        (id, username ,password,personInformation,email,qq)
+        VALUES (null, #{username},#{password},#{personInformation},
+        #{email},#{qq})
+
+    </insert>
+
+    <delete id="deleteTeacherByName" parameterType="java.lang.String">
+        DELETE FROM teacher WHERE username = #{username}
+    </delete>
+
+
+    <update id="updateTeacherName" parameterType="com.yqy.pojo.yonghu.Teacher">
+        UPDATE student
+        SET username = #{username},password = #{password},
+        personInformation = #{personInformation},
+        email = #{email},qq = #{qq}
+        WHERE id = #{id}
+    </update>
+
+
+    <insert id ="insertTeacher" parameterType="com.yqy.pojo.yonghu.Teacher" resultType="java.lang.Integer">
+        INSERT INTO teacher
+        (id, username ,password,personInformation,qq,email)
+        VALUES (null, #{username},#{password},#{personInformation},
+        #{qq},#{email})
+
+    </insert>
+
+    <delete id="deleteStudentByName" parameterType="java.lang.String">
+        DELETE FROM teacher WHERE username = #{username}
+    </delete>
+
+
+    <update id="updateTeacher" parameterType="com.yqy.pojo.yonghu.Teacher" resultType="java.lang.Integer">
+        UPDATE teacher
+        SET username = #{username},password = #{password},
+        personInformation = #{personInformation},
+        qq = #{qq},email = #{email}
+        WHERE id = #{id}
+    </update>
+
+
+</mapper>
