@@ -31,7 +31,6 @@ public class GetQuestionServlet extends HttpServlet {
         ArrayList<CurrentStudentQuestion> currentStudentQuestions = lessonService.GetStudentQuestion(currentStudentChapter);
 
         String jsonString = JSON.toJSONString(currentStudentQuestions);
-        System.out.println(currentStudentQuestions);
 
 
         resp.setContentType("text/json;charset=utf-8");

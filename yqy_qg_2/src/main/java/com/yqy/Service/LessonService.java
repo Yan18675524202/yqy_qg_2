@@ -56,5 +56,5 @@ public interface LessonService {
     //判断热门课程
     public ArrayList<Lesson> JudgeGoodLesson(ArrayList<Lesson> lessons);
     //添加图片
-    public int addImage(int id,String url);
+    public int addImage(int id,String url,String sign);
 }

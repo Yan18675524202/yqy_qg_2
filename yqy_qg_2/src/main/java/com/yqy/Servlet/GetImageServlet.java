@@ -3,7 +3,6 @@ package com.yqy.Servlet;
 import com.aliyuncs.exceptions.ClientException;
 import com.yqy.Service.Impl.LessonServiceImpl;
 import com.yqy.Utils.AliOSSUtils;
-import com.yqy.captchaSrc;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,13 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @WebServlet("/GetImage")
@@ -28,6 +22,7 @@ public class GetImageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         int id = Integer.parseInt(req.getParameter("number"));
         // 接收文件
         Part filePart = req.getPart("file");
@@ -43,9 +38,17 @@ public class GetImageServlet extends HttpServlet {
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
-
+        String sign = req.getParameter("sign");
+        int i = 0;
         LessonServiceImpl lessonService = new LessonServiceImpl();
-        int i = lessonService.addImage(id, upload);
+        if (sign.equals("1")){
+            i = lessonService.addImage(id, upload ,sign);
+        }else {
+
+            i = lessonService.addImage(id, upload,sign);
+        }
+
+
 
         if (i==1){
             resp.getWriter().write("Success");

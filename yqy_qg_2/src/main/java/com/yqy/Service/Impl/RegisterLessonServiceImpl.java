@@ -69,7 +69,7 @@ public class RegisterLessonServiceImpl implements RegisterLessonService {
         ArrayList<Question> questions = mapper1.SelectByChapterId(currentStudentChapter.getChapterId());
         for (Question q: questions) {
 
-            RegisterQuestion(new CurrentStudentQuestion(0,currentStudentChapter.getStudentName(),q.getInformation(),"", "未完成",q.getId(),currentStudentChapter.getChapterId(),0,q.getImagePath()),sqlSession);
+            RegisterQuestion(new CurrentStudentQuestion(0,currentStudentChapter.getStudentName(),q.getInformation(),"", "未完成",q.getId(),currentStudentChapter.getChapterId(),0,q.getImagePath(),q.getQuestionType()),sqlSession);
         }
         return i;
     }
@@ -261,6 +261,7 @@ if (!currentStudentQuestions.isEmpty()){
             currentStudentQuestion.setInformation(question.getInformation());
             currentStudentQuestion.setQuestionId(question.getId());
             currentStudentQuestion.setImagePath(question.getImagePath());
+            currentStudentQuestion.setQuestionType(question.getQuestionType());
             int i = RegisterQuestion(currentStudentQuestion, sqlSession);
 
 

@@ -79,10 +79,10 @@
     <insert id ="RegisterChapterQuestion" parameterType="com.yqy.pojo.yonghuStudy.CurrentStudentQuestion" resultType="java.lang.Integer">
         INSERT INTO CurrentStudentQuestion
         (id ,studentName,information,
-        answer,questionFinish,questionId,chapterId,getScore,imagePath)
+        answer,questionFinish,questionId,chapterId,getScore,imagePath,questionType)
         VALUES (null,#{studentName} ,
         #{information}, #{answer},#{questionFinish}
-        ,#{questionId},#{chapterId},#{getScore},#{imagePath})
+        ,#{questionId},#{chapterId},#{getScore},#{imagePath},#{questionType})
     </insert>
 
     <select   id="SelectRegisterStudent" parameterType="com.yqy.pojo.yonghuStudy.RegisterStudent" resultType="com.yqy.pojo.yonghuStudy.RegisterStudent">
@@ -144,7 +144,7 @@
         SET studentName = #{studentName},information = #{information},
         answer = #{answer},getScore = #{getScore},
         questionFinish = #{questionFinish},imagePath = #{imagePath},
-        questionId = #{questionId},  chapterId = #{chapterId}
+        questionId = #{questionId},  chapterId = #{chapterId},questionType = #{questionType}
         WHERE id = #{id}
     </update>
 

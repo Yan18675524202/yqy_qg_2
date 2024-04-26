@@ -49,4 +49,8 @@ public interface LessonDao {
     public void deleteLessonInformation(int id);
     //修改问题
     public int updateQuestion(Question question);
+
+    public Chapter SelectChapterById(int id);
+    //修改章节
+    public int updateChapter(Chapter chapter);
 }

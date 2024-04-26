@@ -48,6 +48,8 @@ public class SubmitAnswerServlet extends HttpServlet {
             currentStudentQuestion1.setAnswer(currentStudentQuestion.getAnswer());
             currentStudentQuestion1.setQuestionFinish("回答错误");
 
+            currentStudentQuestion1.setGetScore(0);
+
             Sign = "Error";
             //更改回答记录
             registerLessonService.UpdateCurrentStudentQuestion(currentStudentQuestion1);

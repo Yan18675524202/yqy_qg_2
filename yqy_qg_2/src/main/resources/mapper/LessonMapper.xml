@@ -101,6 +101,12 @@
         where chapterId =#{chapterId};
     </select>
 
+    <select   id="SelectChapterById" parameterType="java.lang.Integer" resultType="com.yqy.pojo.Chapter">
+
+        SELECT * FROM Chapter
+        where id =#{id};
+    </select>
+
     <update id="updateLesson" parameterType="com.yqy.pojo.Lesson" resultType="java.lang.Integer">
         UPDATE lesson
         SET name = #{name},teacherName = #{teacherName},
@@ -116,6 +122,14 @@
         information = #{information},name = #{name},
         questionType = #{questionType},rightAnswer = #{rightAnswer},
         score = #{score},imagePath = #{imagePath}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateChapter" parameterType="com.yqy.pojo.Chapter" resultType="java.lang.Integer">
+        UPDATE chapter
+        SET name = #{name},lessonId = #{lessonId},
+        information = #{information},name = #{name},
+        imagePath = #{imagePath}
         WHERE id = #{id}
     </update>
 

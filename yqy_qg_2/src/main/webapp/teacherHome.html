@@ -167,6 +167,22 @@
                 <el-button type="primary" @click="deleteLessonDialogVisible = false">取消</el-button>>
                 <el-button type="primary" @click=" sendDeleteMyLesson()">确定</el-button>>
             </el-dialog>
+
+
+
+            <el-dialog title="添加图片" :visible.sync="ChapterImageDialogVisible">
+              <el-form :model="imageInfo" label-width="100px">
+                <el-form-item label="图片">
+                  <el-input id="fileInput1" type="file" v-model="imageInfo.image"></el-input>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="ChapterImageDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="sendChapterImage()">保存</el-button>
+              </div>
+
+            </el-dialog>
+
             <!-- 编辑章节-->
             <el-dialog title="章节" :visible.sync="dealLessonDialogVisible">
               <el-table :data="myChapter" style="width: 100%">
@@ -174,6 +190,7 @@
                 <el-table-column align="center" prop="information" label="内容"></el-table-column>
                 <el-table-column label="">
                   <template slot-scope="scope">
+                    <el-button type="text" @click="addChapterImage(scope.row)">添加图片</el-button>
                     <el-button type="text" @click="dealMyQuestion(scope.row)">编辑问题</el-button>
                     <el-button type="text" @click="deleteMyChapter(scope.row)">删除</el-button>
                   </template>
@@ -191,7 +208,7 @@
             <el-dialog title="添加图片" :visible.sync="imageDialogVisible">
               <el-form :model="imageInfo" label-width="100px">
                 <el-form-item label="图片">
-                  <el-input id="fileInput" type="file" v-model="imageInfo.image"></el-input>
+                  <el-input id="fileInput2" type="file" v-model="imageInfo.image"></el-input>
                 </el-form-item>
               </el-form>
               <div slot="footer" class="dialog-footer">
@@ -523,6 +540,7 @@
       GoodLessonsDialogVisible:false,
       GoodStudentDialogVisible:false,
       imageDialogVisible:false,
+      ChapterImageDialogVisible:false,
       goodStudent:[],
       goodLesson:[],
       AllLessonData: [],
@@ -549,9 +567,14 @@
 
     },
     methods:{
-      sendImage(){
+      addChapterImage(Chapter){
+        this.ChapterImageDialogVisible = true
+        this.imageInfo.id = Chapter.id
+
+      },
+      sendChapterImage(){
         var numberValue = this.imageInfo.id
-        var file = document.getElementById("fileInput").files[0];
+        var file = document.getElementById("fileInput1").files[0];
 
         // 创建FormData对象，用于将数据发送到后台
         var formData = new FormData();
@@ -560,7 +583,8 @@
 
         // 发送POST请求到后台
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/yqy_qg_2_war/GetImage", true);
+        xhr.open("POST", "http://localhost:8080/yqy_qg_2_war/GetImage?sign=1", true);
+        xhr.setRequestHeader("Authorization",localStorage.getItem("token"))
         xhr.onreadystatechange = function() {
           if (xhr.readyState === 4 && xhr.status === 200) {
             // 处理后台响应
@@ -569,7 +593,30 @@
         };
         xhr.send(formData);
 
+        this.ChapterImageDialogVisible =false
+      },
+      sendImage(){
+        var numberValue = this.imageInfo.id
+        var file = document.getElementById("fileInput2").files[0];
 
+        // 创建FormData对象，用于将数据发送到后台
+        var formData = new FormData();
+        formData.append("number", numberValue);
+        formData.append("file", file);
+
+        // 发送POST请求到后台
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/yqy_qg_2_war/GetImage?sign=2", true);
+        xhr.setRequestHeader("Authorization",localStorage.getItem("token"))
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            // 处理后台响应
+            console.log(xhr.responseText);
+          }
+        };
+        xhr.send(formData);
+
+        this.imageDialogVisible =false
       },
       addImage(question){
         this.imageDialogVisible = true

@@ -321,11 +321,21 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public int addImage(int id, String url) {
+    public int addImage(int id, String url,String sign) {
         LessonDao mapper = sqlSession.getMapper(LessonDao.class);
-        Question question = mapper.SelectQuestionById(id);
-        question.setImagePath(url);
-        int i = mapper.updateQuestion(question);
+        int i =0;
+        if (sign.equals("1")){
+            Chapter chapter = mapper.SelectChapterById(id);
+            chapter.setImagePath(url);
+            i = mapper.updateChapter(chapter);
+        }else {
+            Question question = mapper.SelectQuestionById(id);
+            question.setImagePath(url);
+            i = mapper.updateQuestion(question);
+        }
+
+
+
         return i;
     }
 

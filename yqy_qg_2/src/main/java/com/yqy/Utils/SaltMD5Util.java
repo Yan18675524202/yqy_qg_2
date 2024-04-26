@@ -97,20 +97,5 @@ public class SaltMD5Util {
             return null;
         }
     }
-    public static void main(String args[]) {
-        // 原密码
-        String password = "1";
-        System.out.println("明文(原生)密码：" + password);
-        // MD5加密后的密码
-        String MD5Password = MD5(password);
-        System.out.println("普通MD5加密密码：" + MD5Password);
-        // 获取加盐后的MD5值
-        String SaltPassword = generateSaltPassword(password);
-        System.out.println("加盐后的MD密码：" + SaltPassword);
-        System.out.println("加盐后的密码和原生密码是否是同一字符串:" + verifySaltPassword(password, SaltPassword));
-    }
-
-
-
 
 }

@@ -16,7 +16,18 @@ public class CurrentStudentQuestion {
     int chapterId;
 
     int getScore;
+
     String imagePath;
+
+    int questionType;
+
+    public int getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(int questionType) {
+        this.questionType = questionType;
+    }
 
     public String getImagePath() {
         return imagePath;
@@ -90,7 +101,9 @@ public class CurrentStudentQuestion {
         this.questionFinish = questionFinish;
     }
 
-    public CurrentStudentQuestion(int id, String studentName, String information, String answer, String questionFinish, int questionId, int chapterId, int getScore, String imagePath) {
+    public CurrentStudentQuestion(int id, String studentName, String information,
+                                  String answer, String questionFinish, int questionId,
+                                  int chapterId, int getScore, String imagePath, int questionType) {
         this.id = id;
         this.studentName = studentName;
         this.information = information;
@@ -100,6 +113,7 @@ public class CurrentStudentQuestion {
         this.chapterId = chapterId;
         this.getScore = getScore;
         this.imagePath = imagePath;
+        this.questionType = questionType;
     }
 
     public CurrentStudentQuestion() {
@@ -117,6 +131,7 @@ public class CurrentStudentQuestion {
                 ", chapterId=" + chapterId +
                 ", getScore=" + getScore +
                 ", imagePath='" + imagePath + '\'' +
+                ", questionType=" + questionType +
                 '}';
     }
 }

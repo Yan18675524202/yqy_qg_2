@@ -239,25 +239,41 @@
 
                         </el-dialog>
 
-                        <el-dialog title="答案" :visible.sync="AnswerInfoDialogVisible">
+                        <el-dialog title="答案" :visible.sync="OneAnswerInfoDialogVisible">
                             <div class="block"  :key="fit">
                             <el-image
                                     style="width: 300px; height: 100px"
                                     :src="imagePath"
                                     :fit="fit"></el-image>
                             </div>
-                            <el-form>
-                                <el-form-item >
-                                    <el-input v-model="answer"></el-input>
-                                </el-form-item>
-                            </el-form>
+                                <el-select v-model="answer" placeholder="请选择" >
+                                    <el-option label="A" value="A" ></el-option>
+                                    <el-option label="B" value="B" ></el-option>
+                                    <el-option label="C" value="C" ></el-option>
+                                    <el-option label="D" value="D" ></el-option>
+                                </el-select>
+
                             <el-button type="text" @click="submitInfo()">提交</el-button>
-                            <el-button type="text" @click="AnswerInfoDialogVisible = false">取消</el-button>
+                            <el-button type="text" @click="OneAnswerInfoDialogVisible = false">取消</el-button>
 
                         </el-dialog>
 
+                        <el-dialog title="答案" :visible.sync="TwoAnswerInfoDialogVisible">
+                            <div class="block"  :key="fit">
+                                <el-image
+                                        style="width: 300px; height: 100px"
+                                        :src="imagePath"
+                                        :fit="fit"></el-image>
+                            </div>
+                                <el-form>
+                                    <el-form-item >
+                                        <el-input v-model="answer"></el-input>
+                                    </el-form-item>
+                                </el-form>
+                            <el-button type="text" @click="submitInfo()">提交</el-button>
+                            <el-button type="text" @click="TwoAnswerInfoDialogVisible = false">取消</el-button>
 
-
+                        </el-dialog>
 
                     </div>
 
@@ -359,7 +375,8 @@
             DiscussionsDialogVisible: false,
             RegisterDialogVisible : false,
             QuestionInfoDialogVisible :false,
-            AnswerInfoDialogVisible:false,
+            TwoAnswerInfoDialogVisible:false,
+            OneAnswerInfoDialogVisible:false,
             addDiscussDialogVisible:false,
             updateMyPasswordDialogVisible:false,
             createReplyDialogVisible:false,
@@ -390,6 +407,7 @@
             ChapterInfo:"",
             answer:"",
             imagePath:"",
+            QuestionType:"",
             fit:'contain',
             currentChapter:{},
         },
@@ -530,15 +548,22 @@
 
 
                 })
-                this.AnswerInfoDialogVisible = false
-
+                this.OneAnswerInfoDialogVisible = false
+                this.TwoAnswerInfoDialogVisible = false
 
             },
             submit(Question){
                 this.imagePath = Question.imagePath
                 this.MyAnswer.chapterId = Question.chapterId
                 this.MyAnswer.id = Question.id
-                this.AnswerInfoDialogVisible = true
+
+                if (Question.questionType === 1) {
+                    this.OneAnswerInfoDialogVisible = true
+                }else {
+                    this.TwoAnswerInfoDialogVisible = true
+                }
+                console.log(Question.questionType)
+
             },
 
 
